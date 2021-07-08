@@ -51,10 +51,17 @@ def convert24(str1):
         return str1[:-2]
           
     else:
-          
         # add 12 to hours and remove PM
         return str(int(str1[:2]) + 12) + str1[2:8]
     
-    
+#injurydf['Adj_Case_Time'] = adjCaseTime.apply(lambda x: convert24(x) if not np.isnan(x) else print(""))
+for i in len(range(injurydf['Case Time'])):
+    if injurydf['Case Time'][i] != np.isnan():
+        print(adjCaseTime[i])
+        injurydf['Adj_Case_Time'].append(convert24(adjCaseTime[i]))
+    else:
+        injurydf['Adj_Case_Time'].append('-1')
+
+
 print(adjCaseTime[5])
 print(convert24(adjCaseTime[64]))
