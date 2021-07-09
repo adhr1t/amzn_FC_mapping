@@ -28,6 +28,7 @@ injurydf['Place_of_Accident'] = placeAccident
 monthInjury = injurydf['Case Date'].apply(lambda x: str(x).lower().split('-')[1])
 injurydf['Month_of_Injury'] = monthInjury
 
+#feature engineering
 # calc difference between "Shift Start" and "Case Time"
 # add 0 to the beginning of all the time recordings
 injurydf['Shift_Start_Time'] = injurydf['Shift Start Time'].apply(lambda x: '0' + str(x) if ':' in str(x)[:2] else x)
@@ -55,7 +56,8 @@ def convert24(str1):
     else:
         return str(int(str1[:2]) + 12) + str1[2:5]
 
-# make list with all the times converted to the 24hr scale
+# make list with shift start and case times converted to the 24hr scale
+startTime24hr=[]
 caseTime24hr=[]
 for i in range(len(injurydf['Case_Time'])):
     #if the time recorded is nan then insert the time listed from injurydf['Time_Recorded']
@@ -63,9 +65,15 @@ for i in range(len(injurydf['Case_Time'])):
         caseTime24hr.append(convert24(injurydf['Time_Recorded'][i]))
     else:
         caseTime24hr.append(convert24(injurydf['Case_Time'][i]))
+        
+for i in range(len(injurydf['Shift_Start_Time'])):
+    #if the time recorded is nan then insert the time listed from injurydf['Time_Recorded']
+    if pd.isnull(injurydf['Shift_Start_Time'][i]):
+        startTime24hr.append('-1')
+    else:
+        startTime24hr.append(convert24(injurydf['Shift_Start_Time'][i]))
+        
+injurydf['Shift_Start_Time_24hr'] = startTime24hr
 injurydf['Case_Time_24hr'] = caseTime24hr
-
-
-
         
 
