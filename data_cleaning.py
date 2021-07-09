@@ -29,13 +29,14 @@ monthInjury = injurydf['Case Date'].apply(lambda x: str(x).lower().split('-')[1]
 injurydf['Month_of_Injury'] = monthInjury
 
 # calc difference between "Shift Start" and "Case Time"
+# add 0 to the beginning of all the time recordings
+injurydf['Shift_Start_Time'] = injurydf['Shift Start Time'].apply(lambda x: '0' + str(x) if ':' in str(x)[:2] else x)
+injurydf['Time_Recorded'] = injurydf['Time Recorded'].apply(lambda x: '0' + str(x) if ':' in str(x)[:2] else x)
+injurydf['Case_Time'] = injurydf['Case Time'].apply(lambda x: '0' + str(x) if ':' in str(x)[:2] else x)
 
-# add 0 to the beginning 
-adjCaseTime = injurydf['Case Time'].apply(lambda x: '0' + str(x) if ':' in str(x)[:2] else x)
 
-# convert times to 24hr clock
+# method to convert times to 24hr clock
 def convert24(str1):
-      
     # Checking if last two elements of time
     # is AM and first two elements are 12
     if str1[-2:] == "AM" and str1[:2] == "12":
@@ -49,19 +50,22 @@ def convert24(str1):
     # is PM and first two elements are 12   
     elif str1[-2:] == "PM" and str1[:2] == "12":
         return str1[:-2]
-          
-    else:
-        # add 12 to hours and remove PM
-        return str(int(str1[:2]) + 12) + str1[2:8]
     
-#injurydf['Adj_Case_Time'] = adjCaseTime.apply(lambda x: convert24(x) if not np.isnan(x) else print(""))
-for i in len(range(injurydf['Case Time'])):
-    if injurydf['Case Time'][i] != np.isnan():
-        print(adjCaseTime[i])
-        injurydf['Adj_Case_Time'].append(convert24(adjCaseTime[i]))
+    # add 12 to hours and remove PM    
     else:
-        injurydf['Adj_Case_Time'].append('-1')
+        return str(int(str1[:2]) + 12) + str1[2:5]
+
+# make list with all the times converted to the 24hr scale
+caseTime24hr=[]
+for i in range(len(injurydf['Case_Time'])):
+    #if the time recorded is nan then insert the time listed from injurydf['Time_Recorded']
+    if pd.isnull(injurydf['Case_Time'][i]):
+        caseTime24hr.append(convert24(injurydf['Time_Recorded'][i]))
+    else:
+        caseTime24hr.append(convert24(injurydf['Case_Time'][i]))
+injurydf['Case_Time_24hr'] = caseTime24hr
 
 
-print(adjCaseTime[5])
-print(convert24(adjCaseTime[64]))
+
+        
+
