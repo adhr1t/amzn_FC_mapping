@@ -6,5 +6,3 @@
 # Code and Resources Used
 **Python Version:** 3.8\
 **Packages:**   pandas, numpy, plotly
-
-# Collection and Cleaning
